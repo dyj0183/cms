@@ -1,4 +1,4 @@
-<div class="panel panel-default">
+<!-- <div class="panel panel-default">
   <div class="panel-heading">
     <p></p>
     <div class="btn-toolbar">
@@ -9,5 +9,29 @@
   <div class="panel-body">
     <p>Email: </p>
     <p>Phone: </p>
+  </div>
+</div> -->
+<div class="row">
+  <div class="col-xs-12">
+    <div class="panel panel-default">
+      <div class="panel-heading clearfix">
+        <h2>{{ contact?.name }}</h2>
+        <div class="pull-left">
+          <img [src]="contact?.imageUrl" alt="{{contact?.name}}" *ngIf="contact?.imageUrl">
+        </div>
+        <div class="pull-right btn-toolbar">
+          <a class="btn btn-primary">Edit</a>
+          <a class="btn btn-danger">Delete</a>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="list-group-item-heading">
+          Email: {{contact?.email}}
+        </div>
+        <div class="list-group-item-heading">
+          Phone: {{contact?.phone}}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
