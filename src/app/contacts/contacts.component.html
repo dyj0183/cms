@@ -3,7 +3,7 @@
         <cms-contact-list (selectedContactEvent)="selectedContact = $event"></cms-contact-list>
     </div>
     <div class="col-md-4">
-        <cms-contact-detail [contact]="selectedContact" *ngIf="selectedContact">
+        <cms-contact-detail [contactDetail]="selectedContact" *ngIf="selectedContact">
         </cms-contact-detail>
     </div>
 </div>

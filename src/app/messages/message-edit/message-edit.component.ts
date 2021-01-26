@@ -6,6 +6,7 @@ import { Message } from '../message.model';
   templateUrl: './message-edit.component.html',
   styleUrls: ['./message-edit.component.css']
 })
+
 export class MessageEditComponent implements OnInit {
   @ViewChild('subject') subject: ElementRef;
   @ViewChild('message') message: ElementRef;

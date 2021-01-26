@@ -7,8 +7,9 @@ import { Message } from '../message.model';
   templateUrl: './message-item.component.html',
   styleUrls: ['./message-item.component.css']
 })
+
 export class MessageItemComponent implements OnInit {
-  @Input() message: Message;
+  @Input() messageItem: Message;
 
   constructor() { }
 

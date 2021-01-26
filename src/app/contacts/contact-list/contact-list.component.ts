@@ -1,6 +1,5 @@
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Contact } from '../contact.model';
-import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'cms-contact-list',
@@ -17,20 +16,12 @@ export class ContactListComponent implements OnInit {
   @Output() selectedContactEvent = new EventEmitter<Contact>();
 
   onSelected (contact: Contact) {
-    this.selectedContactEvent.emit(contact);
+    this.selectedContactEvent.emit(contact); // send the contact data to the parent based on the one the user clicks on
   }
-
-
-
-
-
-
 
   constructor() { }
 
   ngOnInit(): void {
   }
-
-
 
 }

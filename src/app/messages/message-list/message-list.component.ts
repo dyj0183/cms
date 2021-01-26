@@ -6,6 +6,7 @@ import { Message } from '../message.model';
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css']
 })
+
 export class MessageListComponent implements OnInit {
   messages: Message[] = [
     new Message('1', 'Subject 1', 'Message Text 1', 'Brother Thayne'),

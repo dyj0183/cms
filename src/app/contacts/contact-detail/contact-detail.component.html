@@ -15,9 +15,9 @@
   <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
-        <h2>{{ contact?.name }}</h2>
+        <h2>{{ contactDetail.name }}</h2>
         <div class="pull-left">
-          <img [src]="contact?.imageUrl" alt="{{contact?.name}}" *ngIf="contact?.imageUrl">
+          <img [src]="contactDetail?.imageUrl" alt="{{contactDetail?.name}}" *ngIf="contactDetail?.imageUrl" style="height: 200px;">
         </div>
         <div class="pull-right btn-toolbar">
           <a class="btn btn-primary">Edit</a>
@@ -26,10 +26,10 @@
       </div>
       <div class="panel-body">
         <div class="list-group-item-heading">
-          Email: {{contact?.email}}
+          Email: {{contactDetail?.email}}
         </div>
         <div class="list-group-item-heading">
-          Phone: {{contact?.phone}}
+          Phone: {{contactDetail?.phone}}
         </div>
       </div>
     </div>

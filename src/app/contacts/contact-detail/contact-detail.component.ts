@@ -7,7 +7,7 @@ import { Contact } from '../contact.model';
   styleUrls: ['./contact-detail.component.css']
 })
 export class ContactDetailComponent implements OnInit {
-  @Input() contact: Contact;
+  @Input() contactDetail: Contact;
   // contact: Contact =
   // new Contact('1', 'Brother Barzee', 'barzeer@byui.edu', '200-222-3232', "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Outdoors-man-portrait_%28cropped%29.jpg/1200px-Outdoors-man-portrait_%28cropped%29.jpg", null);
 
