@@ -8,8 +8,13 @@
   <div class="panel-body">
     <div class="center-panel">
       <!--Add tag to display a list of DocumentItem components-->
-      <cms-document-item></cms-document-item>
+      <cms-document-item
+      *ngFor="let document of allDocuments"
+      [documentItem]="document"
+      (click)="onSelectedDocument(document)">
+
+      </cms-document-item>
     </div>
   </div>
-
 </div>
+

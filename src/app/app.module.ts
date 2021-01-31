@@ -14,6 +14,7 @@ import { DocumentListComponent } from './documents/document-list/document-list.c
 import { MessageEditComponent } from './messages/message-edit/message-edit.component';
 import { MessageItemComponent } from './messages/message-item/message-item.component';
 import { MessageListComponent } from './messages/message-list/message-list.component';
+import { DropdownDirective } from './directives/dropdown.directive';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { MessageListComponent } from './messages/message-list/message-list.compo
     DocumentListComponent,
     MessageEditComponent,
     MessageItemComponent,
-    MessageListComponent
+    MessageListComponent,
+    DropdownDirective
   ],
   imports: [
     BrowserModule
