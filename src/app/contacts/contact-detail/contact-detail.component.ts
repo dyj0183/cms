@@ -1,19 +1,30 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Contact } from '../contact.model';
+import { ContactService } from '../contact.service';
 
 @Component({
   selector: 'cms-contact-detail',
   templateUrl: './contact-detail.component.html',
-  styleUrls: ['./contact-detail.component.css']
+  styleUrls: ['./contact-detail.component.css'],
 })
 export class ContactDetailComponent implements OnInit {
-  @Input() contactDetail: Contact;
+  contactDetail: Contact;
+  id: string;
+  // @Input() contactDetail: Contact;
   // contact: Contact =
   // new Contact('1', 'Brother Barzee', 'barzeer@byui.edu', '200-222-3232', "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Outdoors-man-portrait_%28cropped%29.jpg/1200px-Outdoors-man-portrait_%28cropped%29.jpg", null);
 
-  constructor() { }
+  constructor(
+    private route: ActivatedRoute,
+    private contactService: ContactService
+  ) {}
 
   ngOnInit(): void {
+    // get id from the router (app-routiing.module)
+    this.route.params.subscribe((params: Params) => {
+      this.id = params['id']; // I can do params.id as well
+      this.contactDetail = this.contactService.getContact(this.id);
+    });
   }
-
 }

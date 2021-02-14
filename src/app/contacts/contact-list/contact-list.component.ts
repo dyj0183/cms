@@ -5,10 +5,9 @@ import { ContactService } from '../contact.service';
 @Component({
   selector: 'cms-contact-list',
   templateUrl: './contact-list.component.html',
-  styleUrls: ['./contact-list.component.css']
+  styleUrls: ['./contact-list.component.css'],
 })
 export class ContactListComponent implements OnInit {
-
   contacts: Contact[] = [];
 
   // I comment out all the old codes for @output since we use "service" now
@@ -19,12 +18,12 @@ export class ContactListComponent implements OnInit {
 
   // @Output() selectedContactEvent = new EventEmitter<Contact>();
 
-  onSelected (contact: Contact) {
+  onSelected(contact: Contact) {
     // this.selectedContactEvent.emit(contact);
     this.contactService.contactSelectedEvent.emit(contact); // send the contact data to the parent based on the one the user clicks on
   }
 
-  constructor(private contactService: ContactService) { }
+  constructor(private contactService: ContactService) {}
 
   ngOnInit(): void {
     this.contacts = this.contactService.getContacts();
@@ -33,5 +32,4 @@ export class ContactListComponent implements OnInit {
   getContacts() {
     this.contacts = this.contactService.getContacts();
   }
-
 }

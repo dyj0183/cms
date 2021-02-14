@@ -15,6 +15,17 @@ import { MessageEditComponent } from './messages/message-edit/message-edit.compo
 import { MessageItemComponent } from './messages/message-item/message-item.component';
 import { MessageListComponent } from './messages/message-list/message-list.component';
 import { DropdownDirective } from './directives/dropdown.directive';
+// import { RouterModule, Routes } from '@angular/router';
+import { AppRoutingModule } from './app-routing.module';
+import { DocumentEditComponent } from './documents/document-edit/document-edit.component';
+import { ContactEditComponent } from './contacts/contact-edit/contact-edit.component';
+
+// // my app router, I moved this part into the app-routig.module.ts file
+// const appRoutes: Routes = [
+//   {path: "documents", component: DocumentsComponent},
+//   {path: "contacts", component: ContactsComponent},
+//   {path: "messages", component: MessageListComponent}
+// ];
 
 @NgModule({
   declarations: [
@@ -31,10 +42,14 @@ import { DropdownDirective } from './directives/dropdown.directive';
     MessageEditComponent,
     MessageItemComponent,
     MessageListComponent,
-    DropdownDirective
+    DropdownDirective,
+    DocumentEditComponent,
+    ContactEditComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    AppRoutingModule
+    // RouterModule.forRoot(appRoutes) // import this for router to work
   ],
   providers: [],
   bootstrap: [AppComponent]

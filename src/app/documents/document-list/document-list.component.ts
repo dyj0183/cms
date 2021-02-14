@@ -27,6 +27,11 @@ export class DocumentListComponent implements OnInit {
 
   ngOnInit(): void {
     this.allDocuments = this.documentService.getDocuments();
-  }
 
+    this.documentService.documentChangedEvent.subscribe(
+      (documents: Document[]) => {
+        this.allDocuments = documents;
+      }
+    )
+  }
 }

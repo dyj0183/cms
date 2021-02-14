@@ -20,7 +20,7 @@ export class ContactService {
   getContact(id: string): Contact {
     // for (var eachContact of this.contacts) {
     //   return eachContact.id === id ? eachContact : null;
-    // }
+    // } why this wouldn't work?
     return this.contacts.find((contact) => contact.id === id);
   }
 }

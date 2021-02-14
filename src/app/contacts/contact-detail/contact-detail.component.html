@@ -1,16 +1,3 @@
-<!-- <div class="panel panel-default">
-  <div class="panel-heading">
-    <p></p>
-    <div class="btn-toolbar">
-      <button type="button" class="btn btn-primary">Edit</button>
-      <button type="button" class="btn btn-danger">Delete</button>
-    </div>
-  </div>
-  <div class="panel-body">
-    <p>Email: </p>
-    <p>Phone: </p>
-  </div>
-</div> -->
 <div class="row">
   <div class="col-xs-12">
     <div class="panel panel-default">
@@ -20,7 +7,7 @@
           <img [src]="contactDetail?.imageUrl" alt="{{contactDetail?.name}}" *ngIf="contactDetail?.imageUrl" style="height: 200px;">
         </div>
         <div class="pull-right btn-toolbar">
-          <a class="btn btn-primary">Edit</a>
+          <a class="btn btn-primary" [routerLink]="['edit']">Edit</a>
           <a class="btn btn-danger">Delete</a>
         </div>
       </div>

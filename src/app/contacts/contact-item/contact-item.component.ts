@@ -8,6 +8,7 @@ import { Contact } from '../contact.model';
 })
 export class ContactItemComponent implements OnInit {
   @Input() contactItem: Contact;
+  @Input() contactId: string;
 
   constructor() { }
 
