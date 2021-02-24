@@ -19,6 +19,7 @@ import { DropdownDirective } from './directives/dropdown.directive';
 import { AppRoutingModule } from './app-routing.module';
 import { DocumentEditComponent } from './documents/document-edit/document-edit.component';
 import { ContactEditComponent } from './contacts/contact-edit/contact-edit.component';
+import { FormsModule } from '@angular/forms';
 
 // // my app router, I moved this part into the app-routig.module.ts file
 // const appRoutes: Routes = [
@@ -48,7 +49,8 @@ import { ContactEditComponent } from './contacts/contact-edit/contact-edit.compo
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule
     // RouterModule.forRoot(appRoutes) // import this for router to work
   ],
   providers: [],
