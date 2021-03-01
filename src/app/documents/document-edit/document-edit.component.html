@@ -11,9 +11,10 @@
             class="form-control"
             size="120"
             max="120"
-            ngModel
+            [ngModel]=document?.name
             name="name"
-            required>
+            required
+            #name="ngModel">
         </div>
       </div>
 
@@ -26,7 +27,7 @@
             class="form-control"
             size="120"
             max="255"
-            ngModel
+            [ngModel]=document?.description
             name="description">
         </div>
       </div>
@@ -40,17 +41,20 @@
             class="form-control"
             size="150"
             max="255"
-            ngModel
+            [ngModel]=document?.url
             name="url"
             required
             #url="ngModel">
             <span class="help-block" *ngIf="!url.valid && url.touched">Please enter a valid URL!</span>
         </div>
       </div>
+      <div>
+        <p *ngIf="!url.valid && url.touched && !name.valid && name.touched">The Document Title and Document URL are required fields</p>
+      </div>
 
       <div class="row">
         <div class="col-xs-12 btn-toolbar">
-          <button class="btn btn-success" type="submit" [disabled]="!f.valid" *ngIf="true" >Save</button>
+          <button class="btn btn-success" type="submit" [disabled]="!f.valid" >Save</button>
           <button class="btn btn-primary" type="button" (click)="onCancel()">Cancel</button>
         </div>
       </div>
