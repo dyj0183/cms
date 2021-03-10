@@ -65,7 +65,26 @@ export class DocumentService {
     this.maxDocumentId++;
     newDocument.id = this.maxDocumentId.toString(); // must convert the "maxDocumentId" into string before we can assing it
     this.documents.push(newDocument); // add this new document to the original doucments data
-    var documentsListClone = this.documents.slice(); // make a copy of the new documents data
+    const documentsListClone = this.documents.slice(); // make a copy of the new documents data
     this.documentListChangedEvent.next(documentsListClone); // return the new copy of the new documents data
+  }
+
+  // update the existing document with updated info
+  updateDocument(originalDocument: Document, newDocument: Document) {
+    // if one of them is "undefined" or "null", then just return
+    if (!originalDocument || !newDocument) {
+      return;
+    }
+
+    const pos = this.documents.indexOf(originalDocument);
+    // check if we are getting a valid pos
+    if (pos < 0) {
+      return;
+    }
+
+    newDocument.id = originalDocument.id; // we are updating the same document so the "id" should stay the same
+    this.documents[pos] = newDocument; // save the newDocument to "replace" the original one in the "documets"
+    const documentsListClone = this.documents.slice(); // make a copy of the entire "documents"
+    this.documentListChangedEvent.next(documentsListClone); // "emit" or "pass" the new copy of the entire "documents" to the "document list"
   }
 }
