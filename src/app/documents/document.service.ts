@@ -52,7 +52,7 @@ export class DocumentService {
         maxId = currentId;
       }
     });
-
+    var test = "test";
     return maxId;
   }
 
