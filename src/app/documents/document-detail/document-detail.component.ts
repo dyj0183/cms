@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { WindRefService } from 'src/app/wind-ref.service';
 import { Document } from '../document.model';
@@ -10,7 +10,6 @@ import { DocumentService } from '../document.service';
   styleUrls: ['./document-detail.component.css'],
 })
 export class DocumentDetailComponent implements OnInit {
-  // @Input() documentDetail: Document
   documentDetail: Document;
   documentId: string;
   nativeWindow: any;
@@ -31,12 +30,14 @@ export class DocumentDetailComponent implements OnInit {
     this.nativeWindow = this.windRefService.getNativeWindow();
   }
 
+  // when the users click on "View", take them to open the related url link
   onView() {
     if (this.documentDetail.url) {
       this.nativeWindow.open(this.documentDetail.url);
     }
   }
 
+  // when the users click on "Delete", call the service and remove the document from "all documents" list
   onDelete() {
     this.documentService.deleteDocument(this.documentDetail);
     // route back to the '/documents' URL
