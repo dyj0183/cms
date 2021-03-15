@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Contact } from '../contact.model';
 import { ContactService } from '../contact.service';
@@ -12,32 +12,17 @@ export class ContactListComponent implements OnInit, OnDestroy {
   contacts: Contact[] = [];
   subscription: Subscription;
 
-
-  // I comment out all the old codes for @output since we use "service" now
-  // contacts: Contact[] = [
-  //   new Contact("1", "R.Kent Jackson", "jacksonk@byui.edu", "208-496-3771", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Outdoors-man-portrait_%28cropped%29.jpg/1200px-Outdoors-man-portrait_%28cropped%29.jpg", null),
-  //   new Contact("2", "Rex Barzee", "barzeer@byui.edu", "208-496-3768", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Outdoors-man-portrait_%28cropped%29.jpg/1200px-Outdoors-man-portrait_%28cropped%29.jpg", null)
-  // ]
-
-  // @Output() selectedContactEvent = new EventEmitter<Contact>();
-
-  onSelected(contact: Contact) {
-    // this.selectedContactEvent.emit(contact);
-    this.contactService.contactSelectedEvent.emit(contact); // send the contact data to the parent based on the one the user clicks on
-  }
-
   constructor(private contactService: ContactService) {}
 
   ngOnInit(): void {
     this.contacts = this.contactService.getContacts();
 
-    this.subscription = this.contactService.contactListChangedEvent.subscribe((contactsList: Contact[]) => {
-      this.contacts = contactsList
-    })
-
-    // this.contactService.contactChangedEvent.subscribe((contacts: Contact[]) => {
-    //   this.contacts = contacts;
-    // });
+    // subscribe to the observable "Subject" in the service
+    this.subscription = this.contactService.contactListChangedEvent.subscribe(
+      (contactsList: Contact[]) => {
+        this.contacts = contactsList;
+      }
+    );
   }
 
   ngOnDestroy(): void {

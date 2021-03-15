@@ -12,11 +12,11 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 export class DocumentEditComponent implements OnInit {
   // @ViewChild('f') signupForm: NgForm; // if we don't put 'f' in our onSubmit function, this is another way for us to access the form
 
-  originalDocument: Document;
-  document: Document;
+  originalDocument: Document; // unedited version
+  document: Document; // edited version in the form
   editMode: boolean = false;
   documentId: string;
-  value: object;
+  // value: object;
   newDocument: Document
 
   constructor(
@@ -28,32 +28,42 @@ export class DocumentEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe((params: Params) => {
       this.documentId = params['id']
-      if (this.documentId == null) {
-        this.editMode = false;
+      if (!this.documentId) { // if this id is not found, that means it is used to add the new document instead of editing
+        this.editMode = false; // so the editmode should be false
         return;
       }
 
-      this.originalDocument = this.documentService.getDocument(this.documentId); // if the id is not equal to null or empty, then it means the user is editing an existing document
+      this.originalDocument = this.documentService.getDocument(this.documentId); // if the id is not equal to null or empty, then it means the component is being used to edit an existing document
 
       if (this.originalDocument == null) {
         return;
       }
 
       this.editMode = true;
-      this.document = JSON.parse(JSON.stringify(this.originalDocument)); // stringify => from JS object to string,
+      this.document = JSON.parse(JSON.stringify(this.originalDocument)); // stringify => from JS object to string, "parse" returns a new JSON object
     });
   }
 
   // receive the 'f' form from the angular which is a NgForm that is also a javascript form object
   onSubmit(form: NgForm) {
-    this.value = form.value; // get values from form's fields
-    // this.newDocument = new Document("100", this.value.name, this.value.description, this.value.url);
+    const value = form.value; // get values from form's fields
+
+    this.newDocument = new Document("100", value.name, value.description, value.url, []);
 
     if (this.editMode == true) {
-
+      this.documentService.updateDocument(this.originalDocument, this.newDocument);
+    } else {
+      this.documentService.addDocument(this.newDocument);
     }
-    console.log(form);
+
+    console.log(form); // this will show us the javascript object of the form
+
+    // route back to the '/documents' URL
+    this.router.navigateByUrl('/documents');
   }
 
-  onCancel() {}
+  onCancel() {
+    // route back to the '/documents' URL
+    this.router.navigateByUrl('/documents');
+  }
 }
