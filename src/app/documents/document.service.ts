@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Document } from './document.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 import { Subject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -14,14 +15,32 @@ export class DocumentService {
   documentListChangedEvent = new Subject<Document[]>();
 
   // constructor, every time we start the program it will reset the codes we have inside
-  constructor() {
+  constructor(private http: HttpClient) {
     this.documents = MOCKDOCUMENTS;
-    this.maxDocumentId = this.getMaxId();
+
   }
 
   // return the copy of all the documents data
-  getDocuments(): Document[] {
-    return this.documents.slice();
+  getDocuments() {
+    this.http
+      .get(
+        'https://angularcms-aa6ec-default-rtdb.firebaseio.com/documents.json'
+      )
+      // success function
+      .subscribe(
+        (documents: Document[]) => {
+          this.documents = documents;
+          this.maxDocumentId = this.getMaxId(); // loop through each document and get the max id
+
+          // what is this sort doing?
+          this.documents.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+          this.documentListChangedEvent.next(this.documents.slice()); // use "Subject" to emit the copy of updated documents
+        },
+        // error function
+        (error: any) => {
+          console.log(error);
+        }
+      );
   }
 
   // return a specific document based on the "id" passed in

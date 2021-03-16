@@ -11,6 +11,7 @@ import { ContactService } from '../contact.service';
 export class ContactListComponent implements OnInit, OnDestroy {
   contacts: Contact[] = [];
   subscription: Subscription;
+  term: string; // this term will be used for contacts-filter.pipe
 
   constructor(private contactService: ContactService) {}
 
@@ -31,5 +32,10 @@ export class ContactListComponent implements OnInit, OnDestroy {
 
   getContacts() {
     this.contacts = this.contactService.getContacts();
+  }
+
+  // for the users to search professors in the contact list
+  search(value: string) {
+    this.term = value;
   }
 }

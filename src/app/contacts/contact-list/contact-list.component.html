@@ -1,17 +1,38 @@
 <div class="panel panel-default">
-  <div class="panel-heading col-xs-12 clearfix">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="row">
+            <span class="title pad-left-right">Contacts</span>
+          </div>
+          <div class="row">
+            <div class="input-group pull-left pad-left-right col-xs-7">
+              <!-- Add the search box input field here -->
+              <input type="text" id="contact-search" name="contact-search" #searchBox (keyup)="search(searchBox.value)" placeholder="Enter a search value">
+              <div class="glyphicon glyphicon-search input-group-addon" (click)="search(searchBox.value)"></div>
+            </div>
+            <div class="pull-right pad-left-right">
+              <a class="btn btn-success" [routerLink]="['new']">New Contact</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="panel-heading col-xs-12 clearfix">
     <div class="col-xs-9">
       <span style="font-size: 25px;">Contacts</span>
     </div>
     <div class="btn-group pull-right col-xs-3">
       <button class="btn btn-success" [routerLink]="['new']">New Contact</button>
     </div>
-  </div>
+  </div> -->
 
   <div class="panel-body">
     <div class="row">
       <div class="col-xs-12">
-        <cms-contact-item *ngFor="let contact of contacts" [contactId]="contact.id" [contactItem]="contact">
+        <cms-contact-item *ngFor="let contact of contacts | contactsFilter:term" [contactId]="contact.id" [contactItem]="contact">
         </cms-contact-item>
       </div>
     </div>

@@ -20,6 +20,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { DocumentEditComponent } from './documents/document-edit/document-edit.component';
 import { ContactEditComponent } from './contacts/contact-edit/contact-edit.component';
 import { FormsModule } from '@angular/forms';
+import { ContactsFilterPipe } from './contacts/contacts-filter.pipe';
+import { HttpClientModule } from '@angular/common/http'; // this unlocks the functionality for using http in Angular
 
 // // my app router, I moved this part into the app-routig.module.ts file
 // const appRoutes: Routes = [
@@ -45,12 +47,14 @@ import { FormsModule } from '@angular/forms';
     MessageListComponent,
     DropdownDirective,
     DocumentEditComponent,
-    ContactEditComponent
+    ContactEditComponent,
+    ContactsFilterPipe
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule,
     // RouterModule.forRoot(appRoutes) // import this for router to work
   ],
   providers: [],
