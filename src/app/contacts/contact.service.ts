@@ -1,7 +1,7 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Contact } from './contact.model';
-import { MOCKCONTACTS } from './MOCKCONTACTS';
 import { Subject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -9,18 +9,31 @@ import { Subject } from 'rxjs';
 export class ContactService {
   contacts: Contact[] = [];
   maxContactId: number;
-  // contactSelectedEvent = new EventEmitter<Contact>();
-  // contactChangedEvent = new EventEmitter<Contact[]>();
 
   contactListChangedEvent = new Subject<Contact[]>();
 
-  constructor() {
-    this.contacts = MOCKCONTACTS;
-    this.maxContactId = this.getMaxId();
-  }
+  constructor(private http: HttpClient) {}
 
-  getContacts(): Contact[] {
-    return this.contacts.slice(); // return a new copy of the contacts array
+  getContacts() {
+    this.http
+      .get('https://angularcms-aa6ec-default-rtdb.firebaseio.com/contacts.json')
+      .subscribe(
+        // success function
+        (contacts: Contact[]) => {
+          this.contacts = contacts; // assign the contacts we "get" from firebase to our local variable
+          this.maxContactId = this.getMaxId(); // loop through each contact and get the max id
+
+          // sort???
+          this.contacts.sort((a, b) =>
+            a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+          );
+          this.contactListChangedEvent.next(this.contacts.slice()); // use "Subject" to emit the copy of updated contacts, so contact-list can use it
+        },
+        // error function
+        (error: any) => {
+          console.log(error);
+        }
+      );
   }
 
   getContact(id: string): Contact {
@@ -39,7 +52,9 @@ export class ContactService {
       return;
     }
     this.contacts.splice(pos, 1);
-    this.contactListChangedEvent.next(this.contacts.slice());
+
+    this.storeContacts();
+    // this.contactListChangedEvent.next(this.contacts.slice());
   }
 
   getMaxId(): number {
@@ -57,15 +72,15 @@ export class ContactService {
 
   // create a new contact to add
   addContact(newContact: Contact) {
-    if (newContact == null || newContact == undefined) {
+    if (!newContact) {
       return;
     }
 
     this.maxContactId++; // incrase one because we are adding a new contact
     newContact.id = this.maxContactId.toString(); // must convert the "maxContactId" into string before we can assing it
     this.contacts.push(newContact); // add this new contact to the original contacts data
-    const contactsListClone = this.contacts.slice(); // make a copy of the new contacts data
-    this.contactListChangedEvent.next(contactsListClone); // return the new copy of the new contacts data
+
+    this.storeContacts();
   }
 
   // update the existing contact with updated info
@@ -83,7 +98,28 @@ export class ContactService {
 
     newContact.id = originalContact.id; // we are updating the same contact so the "id" should stay the same
     this.contacts[pos] = newContact; // save the newContact to "replace" the original one in the "contacts"
-    const contactsListClone = this.contacts.slice(); // make a copy of the entire "contacts"
-    this.contactListChangedEvent.next(contactsListClone); // "emit" or "pass" the new copy of the entire "contacts" to the "contact list"
+
+    this.storeContacts();
+  }
+
+  // this method will be called when a Contact object is added, updated, or deleted
+  storeContacts() {
+    // by now, "this.contacts" have been either added, deleted, or updated which means it is the most updated version
+    let contactsJSON = JSON.stringify(this.contacts); // when sending data to web server, the data must be a string, convert javascript object into a string by using JSON.stringify()
+
+    // headers???
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // use "put" to update
+    this.http
+      .put(
+        'https://angularcms-aa6ec-default-rtdb.firebaseio.com/contacts.json',
+        contactsJSON,
+        { headers: headers }
+      )
+      .subscribe(() => {
+        // put is unlike get, doesn't retunr anything
+        this.contactListChangedEvent.next(this.contacts.slice()); // emit the most updated contacts for other components to use. we use observable "Subject" here which is why we use "next" instead of "emit"
+      });
   }
 }

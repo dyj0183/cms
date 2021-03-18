@@ -16,7 +16,6 @@ export class ContactListComponent implements OnInit, OnDestroy {
   constructor(private contactService: ContactService) {}
 
   ngOnInit(): void {
-    this.contacts = this.contactService.getContacts();
 
     // subscribe to the observable "Subject" in the service
     this.subscription = this.contactService.contactListChangedEvent.subscribe(
@@ -24,15 +23,17 @@ export class ContactListComponent implements OnInit, OnDestroy {
         this.contacts = contactsList;
       }
     );
+
+    this.contactService.getContacts();
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
-  getContacts() {
-    this.contacts = this.contactService.getContacts();
-  }
+  // getContacts() {
+  //   this.contacts = this.contactService.getContacts();
+  // }
 
   // for the users to search professors in the contact list
   search(value: string) {
