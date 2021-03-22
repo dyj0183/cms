@@ -20,5 +20,4 @@ export class MessageItemComponent implements OnInit {
     const contact: Contact = this.contactService.getContact(this.messageItem.sender);
     this.messageSender = contact.name;
   }
-
 }

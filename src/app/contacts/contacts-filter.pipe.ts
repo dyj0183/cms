@@ -14,12 +14,15 @@ export class ContactsFilterPipe implements PipeTransform {
           filteredArray.push(contact); // if it matches, then push it to the filteredArray list
         }
       });
+      return filteredArray;
+    } else {
+      return contacts; // if the search found nothing, then just retunr the original list of arrys
     }
 
-    if (filteredArray.length < 1) {
-      return contacts; // if the search found nothing, then just retunr the original list of arrys
-    } else {
-      return filteredArray;
-    }
+    // if (filteredArray.length < 1) {
+    //   return contacts; // if the search found nothing, then just retunr the original list of arrys
+    // } else {
+    //   return filteredArray;
+    // }
   }
 }
