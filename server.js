@@ -1,3 +1,15 @@
+// get defined routing files
+var index = require('./server/routes/app');
+const messageRoutes = require('./server/routes/messages');
+const contactRoutes = require('./server/routes/contacts');
+const documentsRoutes = require('./server/routes/documents');
+
+// Add URL routes to map the following URLs to each of the three files shown above.
+app.use('/', index);
+app.use('/messages', messageRoutes);
+app.use('/contacts', contactRoutes);
+app.use('/documents', documentsRoutes);
+
 // Get dependencies
 var express = require('express');
 var path = require('path');
