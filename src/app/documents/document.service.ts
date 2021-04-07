@@ -9,6 +9,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class DocumentService {
   documents: Document[] = [];
   maxDocumentId: number;
+  private databaseUrl = 'http://localhost:3000/documents/';
 
   // we set it up here so that we can use later in different functions
   documentListChangedEvent = new Subject<Document[]>();
@@ -17,28 +18,31 @@ export class DocumentService {
   // dependency injection for us to use HttpClient
   constructor(private http: HttpClient) {}
 
+  sortAndSend() {
+    this.documents = this.documents.sort((a, b) =>
+      a.name.toLowerCase() > b.name.toLowerCase()
+        ? 1
+        : b.name.toLowerCase() > a.name.toLowerCase()
+        ? -1
+        : 0
+    );
+    this.documentListChangedEvent.next(this.documents.slice());
+  }
+
   // return the copy of all the documents data by using "Get" to access the data from firebase
   // It returns an Observable object because all HTTP requests are asynchronous (i.e. the response will not be returned immediately). This Observerable object waits and listens for a response to be returned from the server.
   getDocuments() {
     this.http
-      .get(
-        'https://angularcms-aa6ec-default-rtdb.firebaseio.com/documents.json'
-      )
+      .get<{ message: String; documents: Document[] }>(this.databaseUrl)
       .subscribe(
-        // success function
-        (documents: Document[]) => {
-          this.documents = documents; // assign the documents we "get" from firebase to our local variable
-          this.maxDocumentId = this.getMaxId(); // loop through each document and get the max id
-
-          // sort???
-          this.documents.sort((a, b) =>
-            a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-          );
-          this.documentListChangedEvent.next(this.documents.slice()); // use "Subject" to emit the copy of updated documents, so document-list can use it
+        (res: any) => {
+          // Get documents from database
+          this.documents = res.documents;
+          // Sort & Emit the document list
+          this.sortAndSend();
         },
-        // error function
-        (error: any) => {
-          console.log(error);
+        (error) => {
+          console.log('Document Error ' + error);
         }
       );
   }
@@ -53,13 +57,19 @@ export class DocumentService {
     if (!document) {
       return;
     }
+
     const pos = this.documents.indexOf(document);
     if (pos < 0) {
       return;
     }
-    this.documents.splice(pos, 1);
 
-    this.storeDocuments(); // call the storeDocuments to do the emit work and update on the firebase
+    // delete from database
+    this.http
+      .delete(this.databaseUrl + document.id)
+      .subscribe((response: Response) => {
+        this.documents.splice(pos, 1);
+        this.sortAndSend();
+      });
   }
 
   // find out the max id in the documents
@@ -82,34 +92,54 @@ export class DocumentService {
 
   // create a new document to add
   addDocument(newDocument: Document) {
-    if (!newDocument) { // check if it is null or undefined
+    if (!newDocument) {
       return;
     }
+    newDocument.id = '';
+    // setting headers for the http post
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    this.maxDocumentId++; // this is for a new document, so we increase one for the new id to use
-    newDocument.id = this.maxDocumentId.toString(); // must convert the "maxDocumentId" into string before we can assing it
-    this.documents.push(newDocument); // add this new document to the original doucments data
-
-    this.storeDocuments(); // call the storeDocuments to do the emit work and update on the firebase
+    // add to database
+    this.http
+      .post<{ message: string; document: Document }>(
+        this.databaseUrl,
+        newDocument,
+        { headers: headers }
+      )
+      .subscribe((responseData) => {
+        // add new document to documents
+        this.documents.push(responseData.document);
+        this.sortAndSend();
+      });
   }
 
   // update the existing document with updated info
   updateDocument(originalDocument: Document, newDocument: Document) {
-    // if one of them is "undefined" or "null", then just return
     if (!originalDocument || !newDocument) {
       return;
     }
 
     const pos = this.documents.indexOf(originalDocument);
-    // check if we are getting a valid pos
     if (pos < 0) {
       return;
     }
 
-    newDocument.id = originalDocument.id; // we are updating the same document so the "id" should stay the same
-    this.documents[pos] = newDocument; // save the newDocument to "replace" the original one in the "documets"
+    newDocument.id = originalDocument.id;
+    // Setting header
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    this.storeDocuments(); // call the storeDocuments to do the emit work and update on the firebase
+    // update database
+    this.http
+      .put(this.databaseUrl + originalDocument.id, newDocument, {
+        headers: headers,
+      })
+      .subscribe((response: Response) => {
+        this.documents[pos] = newDocument;
+        this.sortAndSend();
+      });
+
+    this.documents[pos] = newDocument;
+    this.sortAndSend();
   }
 
   // this method will be called when a Document object is added, updated, or deleted
@@ -127,7 +157,8 @@ export class DocumentService {
         documentsJSON,
         { headers: headers }
       )
-      .subscribe(() => { // put is unlike get, doesn't retunr anything
+      .subscribe(() => {
+        // put is unlike get, doesn't retunr anything
         this.documentListChangedEvent.next(this.documents.slice()); // emit the most updated documents for other components to use. we use observable "Subject" here which is why we use "next" instead of "emit"
       });
   }

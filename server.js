@@ -55,12 +55,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Add URL routes to map the following URLs to each of the three files shown above.
-app.use('/', index);
-app.use('/messages', messageRoutes);
-app.use('/contacts', contactRoutes);
-app.use('/documents', documentsRoutes);
-
 // Tell express to use the specified director as the
 // root directory for your web site
 app.use(express.static(path.join(__dirname, 'dist/cms')));
@@ -69,6 +63,16 @@ app.use(express.static(path.join(__dirname, 'dist/cms')));
 app.use('/', index);
 
 // ... ADD YOUR CODE TO MAP YOUR URL'S TO ROUTING FILES HERE ...
+// Add URL routes to map the following URLs to each of the three files shown above.
+app.use('/', index);
+app.use('/messages', messageRoutes);
+app.use('/contacts', contactRoutes);
+app.use('/documents', documentsRoutes);
+
+// ... ADD YOUR CODE TO MAP YOUR URL'S TO ROUTING FILES HERE ...
+app.use(function(req, res, next){
+  res.render('index');
+});
 
 // Tell express to map all other non-defined routes back to the index page
 app.get('*', (req, res) => {
