@@ -9,6 +9,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class MessageService {
   messages: Message[] = [];
   maxMessageId: number;
+  private databaseUrl = 'http://localhost:3000/messages/';
 
   // we set it up here so that we can use later in different functions
   messageListChangedEvent = new Subject<Message[]>();
@@ -23,10 +24,33 @@ export class MessageService {
   }
 
   addMessage(message: Message) {
-    this.messages.push(message);
+    // Ensuring the message exists
+    if (!message) return;
 
-    this.storeMessages();
+    // Removing id if it exists (db sets this)
+    message.id = '';
+
+    // setting headers for the http post
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    this.http
+      .post<{ message: string; msg: Message }>(this.databaseUrl, message, {
+        headers: headers,
+      })
+      .subscribe((responseData) => {
+        // setting message id
+        message.id = responseData.msg.id;
+        // add new message to messages
+        this.messages.push(message);
+        this.messageListChangedEvent.next(this.messages.slice());
+      });
   }
+
+  // addMessage(message: Message) {
+  //   this.messages.push(message);
+
+  //   this.storeMessages();
+  // }
 
   // find out the max id in the messages
   getMaxId(): number {
@@ -50,25 +74,41 @@ export class MessageService {
   // It returns an Observable object because all HTTP requests are asynchronous (i.e. the response will not be returned immediately). This Observerable object waits and listens for a response to be returned from the server.
   getMessages() {
     this.http
-      .get('https://angularcms-aa6ec-default-rtdb.firebaseio.com/messages.json')
+      .get<{ message: String; messages: Message[] }>(this.databaseUrl)
       .subscribe(
-        // success function
-        (messages: Message[]) => {
-          this.messages = messages; // assign the messages we "get" from firebase to our local variable
-          this.maxMessageId = this.getMaxId(); // loop through each message and get the max id
-
-          // sort by subject???
-          this.messages.sort((a, b) =>
-            a.subject > b.subject ? 1 : b.subject > a.subject ? -1 : 0
-          );
-          this.messageListChangedEvent.next(this.messages.slice()); // use "Subject" to emit the copy of updated messages, so message-list can use it
+        (res: any) => {
+          // Get messages from database
+          this.messages = res.messages;
+          // Emit the message list
+          this.messageListChangedEvent.next(this.messages.slice());
         },
-        // error function
-        (error: any) => {
-          console.log(error);
+        (error) => {
+          console.log(this.messages);
+          console.log('Get Messages Error: ' + error);
         }
       );
   }
+  // getMessages() {
+  //   this.http
+  //     .get('https://angularcms-aa6ec-default-rtdb.firebaseio.com/messages.json')
+  //     .subscribe(
+  //       // success function
+  //       (messages: Message[]) => {
+  //         this.messages = messages; // assign the messages we "get" from firebase to our local variable
+  //         this.maxMessageId = this.getMaxId(); // loop through each message and get the max id
+
+  //         // sort by subject???
+  //         this.messages.sort((a, b) =>
+  //           a.subject > b.subject ? 1 : b.subject > a.subject ? -1 : 0
+  //         );
+  //         this.messageListChangedEvent.next(this.messages.slice()); // use "Subject" to emit the copy of updated messages, so message-list can use it
+  //       },
+  //       // error function
+  //       (error: any) => {
+  //         console.log(error);
+  //       }
+  //     );
+  // }
 
   // this method will be called when a messages object is added, updated, or deleted
   storeMessages() {
