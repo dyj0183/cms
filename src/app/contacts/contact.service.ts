@@ -9,29 +9,33 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class ContactService {
   contacts: Contact[] = [];
   maxContactId: number;
-
   contactListChangedEvent = new Subject<Contact[]>();
+  private databaseUrl = 'http://localhost:3000/contacts/';
 
   constructor(private http: HttpClient) {}
 
+  sortAndSend() {
+    this.contacts = this.contacts.sort((a, b) =>
+      a.name.toLowerCase() > b.name.toLowerCase()
+        ? 1
+        : b.name.toLowerCase() > a.name.toLowerCase()
+        ? -1
+        : 0
+    );
+
+    this.contactListChangedEvent.next(this.contacts.slice());
+  }
+
   getContacts() {
     this.http
-      .get('https://angularcms-aa6ec-default-rtdb.firebaseio.com/contacts.json')
+      .get<{ message: String; contacts: Contact[] }>(this.databaseUrl)
       .subscribe(
-        // success function
-        (contacts: Contact[]) => {
-          this.contacts = contacts; // assign the contacts we "get" from firebase to our local variable
-          this.maxContactId = this.getMaxId(); // loop through each contact and get the max id
-
-          // sort???
-          this.contacts.sort((a, b) =>
-            a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-          );
-          this.contactListChangedEvent.next(this.contacts.slice()); // use "Subject" to emit the copy of updated contacts, so contact-list can use it
+        (res: any) => {
+          this.contacts = res.contacts;
+          this.sortAndSend();
         },
-        // error function
-        (error: any) => {
-          console.log(error);
+        (error) => {
+          console.log('Contact Error: ' + error);
         }
       );
   }
@@ -43,18 +47,23 @@ export class ContactService {
     return this.contacts.find((contact) => contact.id === id);
   }
 
-  deleteContact(contact: Contact) {
-    if (!contact) {
+  deleteContact(contacts: Contact) {
+    if (!contacts) {
       return;
     }
-    const pos = this.contacts.indexOf(contact);
+
+    const pos = this.contacts.indexOf(contacts);
     if (pos < 0) {
       return;
     }
-    this.contacts.splice(pos, 1);
 
-    this.storeContacts();
-    // this.contactListChangedEvent.next(this.contacts.slice());
+    // delete from database
+    this.http
+      .delete(this.databaseUrl + contacts.id)
+      .subscribe((response: Response) => {
+        this.contacts.splice(pos, 1);
+        this.sortAndSend();
+      });
   }
 
   getMaxId(): number {
@@ -72,34 +81,53 @@ export class ContactService {
 
   // create a new contact to add
   addContact(newContact: Contact) {
-    if (!newContact) {
-      return;
-    }
+    if (!newContact) return;
 
-    this.maxContactId++; // incrase one because we are adding a new contact
-    newContact.id = this.maxContactId.toString(); // must convert the "maxContactId" into string before we can assing it
-    this.contacts.push(newContact); // add this new contact to the original contacts data
+    // Removing id if it exists (db sets this)
+    newContact.id = '';
 
-    this.storeContacts();
+    // setting headers for the http post
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // add to database
+    this.http
+      .post<{ message: string; contact: Contact }>(
+        this.databaseUrl,
+        newContact,
+        { headers: headers }
+      )
+      .subscribe((responseData) => {
+        // add new contact to contacts
+        this.contacts.push(responseData.contact);
+        this.sortAndSend();
+      });
   }
 
   // update the existing contact with updated info
   updateContact(originalContact: Contact, newContact: Contact) {
-    // if one of them is "undefined" or "null", then just return
     if (!originalContact || !newContact) {
       return;
     }
 
     const pos = this.contacts.indexOf(originalContact);
-    // check if we are getting a valid pos
     if (pos < 0) {
       return;
     }
 
-    newContact.id = originalContact.id; // we are updating the same contact so the "id" should stay the same
-    this.contacts[pos] = newContact; // save the newContact to "replace" the original one in the "contacts"
+    newContact.id = originalContact.id;
 
-    this.storeContacts();
+    // Setting header
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // update database
+    this.http
+      .put(this.databaseUrl + originalContact.id, newContact, {
+        headers: headers,
+      })
+      .subscribe((response: Response) => {
+        this.contacts[pos] = newContact;
+        this.sortAndSend();
+      });
   }
 
   // this method will be called when a Contact object is added, updated, or deleted
