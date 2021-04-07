@@ -1,14 +1,21 @@
+var mongoose = require('mongoose');
+// establish a connection to the mongo database
+mongoose.connect('mongodb://localhost:27017/cms',
+   { useNewUrlParser: true }, (err, res) => {
+      if (err) {
+         console.log('Connection failed: ' + err);
+      }
+      else {
+         console.log('Connected to database!');
+      }
+   }
+);
+
 // get defined routing files
 var index = require('./server/routes/app');
 const messageRoutes = require('./server/routes/messages');
 const contactRoutes = require('./server/routes/contacts');
 const documentsRoutes = require('./server/routes/documents');
-
-// Add URL routes to map the following URLs to each of the three files shown above.
-app.use('/', index);
-app.use('/messages', messageRoutes);
-app.use('/contacts', contactRoutes);
-app.use('/documents', documentsRoutes);
 
 // Get dependencies
 var express = require('express');
@@ -47,6 +54,12 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+// Add URL routes to map the following URLs to each of the three files shown above.
+app.use('/', index);
+app.use('/messages', messageRoutes);
+app.use('/contacts', contactRoutes);
+app.use('/documents', documentsRoutes);
 
 // Tell express to use the specified director as the
 // root directory for your web site
